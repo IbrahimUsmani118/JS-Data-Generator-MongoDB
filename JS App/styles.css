@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Quicksand", sans-serif;
+  background-color: white; /* Set the background color to white */
+}
+
+h1 {
+  font-family: "Pacifico", cursive;
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: #6c63ff; /* Set the background color of the header to blue */
+  color: #fff; /* Set the text color to white */
+  padding: 10px; /* Add padding to the header */
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50; /* Set the button background color to green */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+button:hover {
+  background-color: #45a049; /* Change the button's hover background color to a slightly different green shade */
+}
+
+#dataList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#dataList li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white; /* Set the background color of list items to white */
+}
+
+#dataList li:last-child {
+  border-bottom: none;
+}
