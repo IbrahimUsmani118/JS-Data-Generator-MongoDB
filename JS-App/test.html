@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management App - Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .data-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e6ffe6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Data Management App - Test</h1>
+        <p>This is a simple test page to verify the backend API is working correctly.</p>
+        
+        <div id="status"></div>
+        
+        <h2>Add New Data</h2>
+        <form id="addForm">
+            <div class="form-group">
+                <label for="key">Key:</label>
+                <input type="text" id="key" required maxlength="50">
+            </div>
+            <div class="form-group">
+                <label for="value">Value:</label>
+                <textarea id="value" rows="3" required maxlength="1000"></textarea>
+            </div>
+            <button type="submit">Add Data</button>
+        </form>
+        
+        <h2>Data List</h2>
+        <button onclick="loadData()">Refresh Data</button>
+        <div id="dataList"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3001/api';
+        
+        // Check API health
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('status').innerHTML = 
+                        '<div class="success">✅ Backend API is running successfully!</div>';
+                } else {
+                    document.getElementById('status').innerHTML = 
+                        '<div class="error">❌ Backend API error: ' + result.error + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    '<div class="error">❌ Cannot connect to backend API. Make sure the server is running on port 3001.</div>';
+            }
+        }
+        
+        // Load all data
+        async function loadData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/data`);
+                const result = await response.json();
+                
+                const dataList = document.getElementById('dataList');
+                if (result.success && result.data.length > 0) {
+                    dataList.innerHTML = result.data.map(item => `
+                        <div class="data-item">
+                            <strong>Key:</strong> ${item.key}<br>
+                            <strong>Value:</strong> ${item.value}<br>
+                            <strong>Created:</strong> ${new Date(item.timestamp).toLocaleString()}<br>
+                            <strong>ID:</strong> ${item.id}
+                        </div>
+                    `).join('');
+                } else {
+                    dataList.innerHTML = '<p>No data found. Add some data to get started!</p>';
+                }
+            } catch (error) {
+                document.getElementById('dataList').innerHTML = 
+                    '<div class="error">Error loading data: ' + error.message + '</div>';
+            }
+        }
+        
+        // Add new data
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const key = document.getElementById('key').value;
+            const value = document.getElementById('value').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ key, value }),
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('addForm').reset();
+                    loadData();
+                    alert('Data added successfully!');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error adding data: ' + error.message);
+            }
+        });
+        
+        // Initialize
+        checkHealth();
+        loadData();
+    </script>
+</body>
+</html> 
